@@ -47,10 +47,8 @@
   object-fit: contain;
 }
 
-@media (max-width: 768px) {
-  .campus-logo-container {
-    display: none; /* Hide logo on mobile to save space */
-  }
+.campus-logo-container {
+  display: none; /* Hide logo on web view */
 }
 
 .report-stats {
