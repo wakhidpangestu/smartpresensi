@@ -1,0 +1,292 @@
+.report-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.report-title-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.report-title-section h1 {
+  font-size: 1.25rem;
+  margin: 0;
+  color: var(--text-primary);
+  font-weight: 800;
+}
+
+.report-title-section .subtitle {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.accent-icon {
+  color: var(--accent-color);
+  background: var(--accent-soft);
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  width: 44px;
+  height: 44px;
+}
+
+.campus-logo {
+  width: 60px;
+  height: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .campus-logo-container {
+    display: none; /* Hide logo on mobile to save space */
+  }
+}
+
+.report-stats {
+  display: flex;
+  gap: 1rem;
+}
+
+.stat-card {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+}
+
+.stat-card svg { color: var(--text-secondary); }
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+/* Hidden on Web, Visible on Print */
+.print-signature-only {
+  display: none;
+}
+
+@media print {
+  /* Pengaturan Kertas */
+  @page {
+    size: A4 portrait;
+    margin: 0.4cm 1cm 1cm 1cm; /* Margin atas dipersempit */
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Hilangkan Navigasi & Elemen Web */
+  .report-stats, .print-action, .accent-icon, .mobile-bottom-nav, .desktop-header {
+    display: none !important;
+  }
+
+  .report-container {
+    padding: 0 !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Header Laporan Mikro (Tanpa Border) */
+  .report-header {
+    border: none !important; /* Menghapus stroke border */
+    margin-bottom: 15pt !important;
+    margin-top: 5pt !important;
+    display: block !important;
+    text-align: center;
+    padding-bottom: 5pt !important;
+    padding-top: 0 !important;
+    position: relative;
+  }
+
+  /* Logo Kampus di Pojok Kanan Atas saat Cetak */
+  .campus-logo-container {
+    position: absolute !important;
+    top: 5pt !important; /* Menaikkan posisi logo ke paling atas */
+    right: 7pt !important;
+    display: block !important;
+  }
+
+  .campus-logo {
+    width: 30pt !important; /* Ukuran diperkecil sedikit agar presisi */
+    height: auto !important;
+  }
+
+  .report-title-section h1 {
+    font-size: 9pt !important;
+    color: black !important;
+    font-weight: bold;
+    margin-bottom: 2pt;
+  }
+
+  .subtitle {
+    font-size: 6.5pt !important;
+    color: #444 !important;
+  }
+
+  /* TABEL TANPA GARIS DALAM (Outer Only: 0.2pt) */
+  .google-calendar-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    table-layout: fixed !important;
+    border: 0.2pt solid #000 !important;
+  }
+
+  /* Lebar Kolom Presisi */
+  .google-calendar-table th:nth-child(1) { width: 4%; }
+  .google-calendar-table th:nth-child(2) { width: 14%; }
+  .google-calendar-table th:nth-child(3) { width: 27%; }
+  .google-calendar-table th:nth-child(4) { width: 15%; }
+  .google-calendar-table th:nth-child(5) { width: 20%; }
+  .google-calendar-table th:nth-child(6) { width: 10%; }
+  .google-calendar-table th:nth-child(7) { width: 10%; }
+
+  .google-calendar-table th {
+    background: #f0f0f0 !important;
+    font-size: 7pt !important;
+    font-weight: bold !important;
+    text-transform: uppercase;
+    border: none !important; /* Hapus garis dalam */
+    padding: 3pt 2pt !important;
+    color: black !important;
+  }
+
+  .google-calendar-table td {
+    font-size: 5.5pt !important; 
+    border-top: 0.15pt solid #eee !important; /* Garis horizontal sangat halus agar tetap terbaca antar baris */
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    padding: 2.5pt 2pt !important;
+    text-align: left;
+    color: black !important;
+    word-wrap: break-word !important;
+    line-height: normal !important;
+  }
+
+  /* Status Badge Cetak */
+  .status-badge {
+    background: none !important;
+    border: none !important;
+    color: black !important;
+    padding: 0 !important;
+    font-weight: bold !important;
+    font-size: 5.5pt !important;
+  }
+
+  /* Area Paraf Dosen (Mikro) */
+  .print-signature-only {
+    display: block !important;
+    margin-top: 25pt !important;
+    page-break-inside: avoid;
+  }
+
+  .signature-box {
+    float: right;
+    width: 120pt;
+    text-align: center;
+    font-size: 7.5pt !important;
+  }
+
+  .signature-space {
+    height: 30pt; /* Area TTD Ringkas */
+  }
+
+  .signature-line {
+    font-weight: bold;
+    font-size: 8pt !important;
+  }
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.stat-card.success { border-left: 4px solid #10b981; }
+.stat-card.danger { border-left: 4px solid #ef4444; }
+
+.calendar-grid {
+  background: white;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.table-responsive { width: 100%; overflow-x: auto; }
+
+.google-calendar-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.google-calendar-table th {
+  background: #f8fafc;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.google-calendar-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.google-calendar-table tbody tr:hover { background: #f1f5f9; }
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.status-badge.hadir { background: #dcfce7; color: #166534; }
+.status-badge.alfa { background: #fee2e2; color: #991b1b; }
+
+@media (max-width: 768px) {
+  .report-header { flex-direction: column; gap: 1rem; text-align: center; }
+  .report-title-section { flex-direction: column; }
+  .report-stats { flex-direction: column; }
+  .stat-card { padding: 1rem; }
+}
+
+@media print {
+  .desktop-header, .mobile-bottom-nav, .print-action { display: none !important; }
+  .report-container { gap: 10px; }
+  .report-header, .stat-card, .calendar-grid { 
+    box-shadow: none !important; 
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+}

@@ -1,0 +1,433 @@
+.add-student-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 120px);
+  padding: 1.5rem;
+}
+
+.auto-card {
+  width: 100%;
+  max-width: 480px;
+  padding: 1.5rem 1.25rem 0.75rem 1.25rem; /* Reduced bottom padding */
+  border-radius: 28px;
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
+}
+
+.form-header.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem; /* Reduced from 1rem */
+  text-align: center;
+}
+
+.accent-icon {
+  width: 56px;
+  height: 56px;
+  background: white;
+  color: var(--accent-color);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 16px rgba(14, 165, 233, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.selection-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+}
+
+.giant-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(0, 0, 0, 0.05); /* Distinct stroke */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05),
+              inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  text-align: center;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.giant-button::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.giant-button:hover::before {
+  left: 100%;
+}
+
+.giant-button:hover {
+  transform: translateY(-4px);
+  background: white;
+  border-color: var(--accent-color);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+}
+
+.giant-button.upload-theme:hover {
+  border-color: #8b5cf6;
+}
+
+.giant-button.camera-theme {
+  color: var(--accent-color);
+}
+
+.giant-button.upload-theme {
+  color: #8b5cf6;
+}
+
+.btn-icon {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.giant-button:hover .btn-icon {
+  transform: scale(1.1) rotate(5deg);
+  background: white;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn-label {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-text {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.sub-text {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* CAMERA Liquid Glass */
+.camera-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 18px; /* Less rounded */
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.video-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Auto full */
+  background: #111;
+  transition: opacity 0.3s ease;
+}
+
+.guideline-box {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%; height: 60%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.4);
+}
+
+.camera-controls.external {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2.25rem;
+  padding: 0.25rem 0 0.25rem 0; /* Minimal bottom padding */
+  margin-top: 0.15rem;
+}
+
+.liquid-glass-btn {
+  width: 58px; height: 58px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 1.25px solid rgba(0, 0, 0, 0.1);
+  box-shadow: none; /* No shadow */
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.liquid-glass-btn:hover {
+  transform: translateY(-2px);
+  background: white;
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: none;
+}
+
+.capture-trigger-btn {
+  position: relative;
+  width: 88px; height: 88px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.capture-glow-ring {
+  position: absolute;
+  top: -3px; right: -3px; bottom: -3px; left: -3px;
+  border-radius: 50%;
+  background: transparent; /* Removed grey */
+  transition: 0.3s;
+}
+
+.capture-trigger-btn:hover .capture-glow-ring {
+  background: rgba(0, 0, 0, 0.02); /* Very subtle if any */
+}
+
+.capture-btn-core.transparent-glass {
+  position: relative;
+  width: 68px; height: 68px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(16px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #334155;
+  border: 1.5px solid rgba(0, 0, 0, 0.15);
+  box-shadow: none; /* No shadow */
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.capture-trigger-btn:hover .capture-btn-core.transparent-glass {
+  transform: scale(1.05);
+  background: white;
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: none;
+}
+
+.capture-trigger-btn:active .capture-btn-core.transparent-glass {
+  transform: scale(0.92);
+}
+
+.placeholder-btn {
+  width: 52px;
+}
+
+/* PROCESSING Liquid Glass */
+.neural-loader {
+  width: 80px; height: 80px;
+}
+
+.loader-ring {
+  background: transparent;
+  border-width: 5px;
+  box-shadow: 0 0 20px var(--accent-soft);
+}
+
+.status-box h3 {
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+/* REVIEW FORM Liquid Glass */
+.review-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  justify-content: center;
+}
+
+.review-header h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #1e293b;
+}
+
+.review-hint {
+  font-size: 0.85rem;
+  color: #64748b;
+  text-align: center;
+  margin-top: -0.5rem;
+  line-height: 1.5;
+}
+
+.review-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  padding: 1.25rem;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-group label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+  margin-left: 0.5rem;
+}
+
+.review-input {
+  background: white;
+  border: 1.5px solid rgba(0, 0, 0, 0.04);
+  padding: 0.85rem 1.15rem;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1e293b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s ease;
+}
+
+.review-input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  background: white;
+  box-shadow: 0 8px 20px rgba(14, 165, 233, 0.1);
+  transform: translateY(-2px);
+}
+
+.review-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.review-actions .glass-button {
+  padding: 0.6rem 0.5rem !important; /* Shorter height */
+  border-radius: 999px !important; /* Full capsule */
+  font-size: 0.85rem !important;
+  font-weight: 700 !important;
+  text-align: center;
+  justify-content: center;
+  min-height: auto !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.review-actions .glass-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08) !important;
+}
+
+.review-actions .glass-button.primary {
+  background: var(--accent-color) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.review-actions .glass-button.outline {
+  background: white !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  color: #64748b !important;
+}
+
+.review-input {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1.5px solid rgba(0, 0, 0, 0.05);
+  font-size: 0.95rem;
+}
+
+.review-input:focus {
+  border-color: var(--accent-color);
+  background: white;
+}
+
+.review-actions .glass-button {
+  padding: 1rem;
+  border-radius: 16px;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.review-actions .primary {
+  background: var(--accent-color);
+  box-shadow: 0 10px 20px rgba(14, 165, 233, 0.2);
+}
+
+.review-actions .primary:hover {
+  box-shadow: 0 15px 25px rgba(14, 165, 233, 0.3);
+}
+
+/* RESULT Liquid Glass */
+.result-container {
+  padding: 1rem 0;
+}
+
+.result-container img, .result-icon-wrapper {
+  margin-bottom: 1.5rem;
+}
+.upload-wrapper {
+  width: 100%;
+  display: flex;
+}
+
+/* Animation utilities */
+.animate-fade-in { animation: fadeIn 0.6s ease; }
+.animate-slide-up { animation: slideUp 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+
+@media (max-width: 600px) {
+  .auto-card { padding: 2rem 1.5rem; }
+  .selection-actions { grid-template-columns: 1fr; gap: 0.75rem; }
+  .add-student-container { padding: 1rem; }
+}
