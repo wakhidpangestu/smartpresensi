@@ -32,17 +32,22 @@ export default defineConfig({
             purpose: 'any maskable'
           }
         ]
+      },
+      workbox: {
+        maximumFileSizeToCacheInBytes: 5000000,
       }
     })
   ],
   build: {
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor': ['react', 'react-dom', 'react-router-dom', 'framer-motion', 'lucide-react'],
-          'face-api': ['face-api.js'],
-          'tesseract': ['tesseract.js']
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('face-api.js')) return 'face-api';
+            if (id.includes('tesseract.js')) return 'tesseract';
+            return 'vendor';
+          }
         }
       }
     }
