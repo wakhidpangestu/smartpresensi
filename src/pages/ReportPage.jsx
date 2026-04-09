@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
-import { Printer, Calendar, Users, CheckCircle, XCircle, BookOpen } from 'lucide-react';
+import { Printer, Calendar, Users, CheckCircle, XCircle } from 'lucide-react';
 import './ReportPage.css';
 
 const ReportPage = () => {
@@ -61,8 +61,27 @@ const ReportPage = () => {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
   });
 
-  const presentCount = data.filter(d => d.attendanceRecords !== null).length;
-  const absentCount = data.filter(d => d.attendanceRecords === null).length;
+  const { presentCount, absentCount } = React.useMemo(() => ({
+    presentCount: data.filter(d => d.attendanceRecords !== null).length,
+    absentCount: data.filter(d => d.attendanceRecords === null).length
+  }), [data]);
+
+  const handlePrint = () => {
+    // Cari nama mata kuliah dari data yang sudah melakukan scan
+    const firstPresence = data.find(d => d.attendanceRecords !== null);
+    const subjectName = firstPresence && firstPresence.attendanceRecords[0].courses 
+      ? firstPresence.attendanceRecords[0].courses.subject_name 
+      : 'Laporan Presensi';
+    
+    const printDate = date.toLocaleDateString('id-ID', { 
+      day: 'numeric', month: 'long', year: 'numeric' 
+    });
+    
+    const originalTitle = document.title;
+    document.title = `${subjectName} ${printDate}`;
+    window.print();
+    document.title = originalTitle;
+  };
 
   return (
     <div className="report-container">
@@ -86,7 +105,7 @@ const ReportPage = () => {
         </div>
 
         <div className="report-header-actions">
-             <button className="glass-button primary print-action" onClick={() => window.print()}>
+             <button className="glass-button primary print-action" onClick={handlePrint}>
                <Printer size={20} /> Cetak Laporan
              </button>
         </div>

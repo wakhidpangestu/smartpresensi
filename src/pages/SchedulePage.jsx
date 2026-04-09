@@ -4,17 +4,14 @@ import { supabase } from '../lib/supabase';
 import './SchedulePage.css';
 
 // New Flat Structure matching the upgraded database schema
+// Constants moved outside component to prevent re-creation
 const DEFAULT_COURSES = [
-  // Senin
   { day_name: 'Senin', subject_name: 'Sistem Basis Data', time_start: '12:00:00', time_end: '13:40:00', room: 'R 5.5.2', sks: 2, lecturer: 'Nila Rusiardi Jayanti, S.Kom., M.Kom', phone: '6281311652979' },
   { day_name: 'Senin', subject_name: 'Praktikum Sistem Basis Data', time_start: '13:40:00', time_end: '14:30:00', room: 'R 5.5.2', sks: 1, lecturer: 'Nila Rusiardi Jayanti, S.Kom., M.Kom', phone: '6281311652979' },
-  // Selasa
   { day_name: 'Selasa', subject_name: 'Arisitektur dan Organisasi Komputer', time_start: '12:00:00', time_end: '14:30:00', room: 'R 7.4.6', sks: 3, lecturer: 'Andi Prastomo, S.Kom., M.Kom', phone: '6289673435470' },
   { day_name: 'Selasa', subject_name: 'Metode Numerik', time_start: '14:30:00', time_end: '17:00:00', room: 'R 7.4.6', sks: 3, lecturer: 'Rifki Ristiawan, S.Pd., M.Msi', phone: '6285780051361' },
-  // Kamis
   { day_name: 'Kamis', subject_name: 'Aljabar Linier dan Matrik', time_start: '12:00:00', time_end: '14:30:00', room: 'R 7.4.6', sks: 3, lecturer: 'Muslihatul Hidayah, S.Pd., M.Pd', phone: '6281228929988' },
   { day_name: 'Kamis', subject_name: 'Manajemen Proyek', time_start: '14:30:00', time_end: '17:00:00', room: 'R 7.4.6', sks: 3, lecturer: 'Juliana, S.Kom., M.T', phone: '628999308740' },
-  // Jumat
   { day_name: 'Jumat', subject_name: 'Sejarah Pendidikan dan PGRI', time_start: '07:30:00', time_end: '09:10:00', room: 'R 7.4.6', sks: 2, lecturer: 'Septa Wati, S.Pd., M.Pd', phone: '6281212405217' },
   { day_name: 'Jumat', subject_name: 'Fisika Listrik Magnet', time_start: '09:10:00', time_end: '10:50:00', room: 'R 7.4.6', sks: 2, lecturer: 'Alhidayatuddiniyah T.W, S.Si., M.Si', phone: '6285770249979' },
 ];
@@ -26,13 +23,13 @@ const SchedulePage = () => {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
 
-  const groupDataByDay = (data) => {
+  const groupDataByDay = useCallback((data) => {
     const grouped = {};
     DAYS_ORDER.forEach(day => {
       grouped[day] = data.filter(item => item.day_name === day);
     });
     return grouped;
-  };
+  }, []);
 
   const fetchSchedules = useCallback(async () => {
     setLoading(true);
@@ -55,7 +52,7 @@ const SchedulePage = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [groupDataByDay]);
 
   useEffect(() => {
     fetchSchedules();

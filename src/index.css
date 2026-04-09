@@ -1,5 +1,5 @@
 :root {
-  --bg-primary: #f8fafc;
+  --bg-primary: #ffffff;
   --bg-secondary: #ffffff;
   --text-primary: #1e293b;
   --text-secondary: #64748b;
@@ -24,11 +24,16 @@
   padding: 0;
 }
 
-body {
-  min-height: 100vh;
+html, body {
+  height: 100%;
+  width: 100%;
   margin: 0;
-  background: var(--bg-primary);
-  transition: background 0.3s ease;
+  padding: 0;
+  overflow: hidden; /* Lock scrolling without breaking fixed positions */
+  background-color: #ffffff !important;
+  color: var(--text-primary);
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Glass effect but light */
