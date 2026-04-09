@@ -15,8 +15,8 @@ export default defineConfig({
         name: 'SmartPresensi',
         short_name: 'SmartPresensi',
         description: 'Sistem Presensi Pintar dengan Face Recognition',
-        theme_color: '#000000',
-        background_color: '#000000',
+        theme_color: '#ffffff',
+        background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
         icons: [
@@ -35,6 +35,18 @@ export default defineConfig({
       }
     })
   ],
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor': ['react', 'react-dom', 'react-router-dom', 'framer-motion', 'lucide-react'],
+          'face-api': ['face-api.js'],
+          'tesseract': ['tesseract.js']
+        }
+      }
+    }
+  },
   server: {
     host: true,
     port: 5173,
