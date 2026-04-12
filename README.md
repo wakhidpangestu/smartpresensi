@@ -92,7 +92,12 @@ Si Perdi menggunakan struktur database relasional yang dioptimalkan untuk kecepa
 ---
 
 ## 👤 Kontributor
-*   **Wakhid Pangestu** - Lead Developer & UI Designer
+*   **Wakhid Pangestu** - Product Manager & Full-Stack Developer
+*   **Muhammad Fauzi Ihsan** - Graphic Designer
+*   **Sophiatul Amalia** - QA Tester
+*   **Alya Nur Tsabita** - IT Support
+*   **Jasmine Romadhoni** - IT Support
+
 *   **Development Tools**: React, Supabase, Lucide, Framer Motion.
 
 ---
