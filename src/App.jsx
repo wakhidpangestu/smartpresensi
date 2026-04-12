@@ -118,7 +118,7 @@ function NavigationContent() {
       <header className="desktop-header glass-panel">
         <NavLink to="/" className="navbar-brand">
           <ScanBarcode size={24} strokeWidth={2.5} />
-          Smart<span>Pren</span>
+          Si<span>Perdi</span>
         </NavLink>
         <div className="desktop-nav">
           <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>

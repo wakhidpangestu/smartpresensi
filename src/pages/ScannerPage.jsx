@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 import { supabase } from '../lib/supabase';
 import * as faceapi from '@vladmandic/face-api';
-import { Camera, RotateCw, CheckCircle, XCircle, Loader2, History, UserRoundSearch, Focus, AlertCircle } from 'lucide-react';
+import { Camera, SwitchCamera, CheckCircle, XCircle, Loader2, RefreshCcw, ScanFace, ScanBarcode, AlertCircle } from 'lucide-react';
 import { haptics } from '../lib/haptics';
 import './ScannerPage.css';
 
@@ -505,7 +505,7 @@ const ScannerPage = () => {
                   onClick={() => { haptics.light(); setCurrentCameraIndex((prev) => (prev + 1) % cameras.length); }} 
                   title="Ganti Kamera"
                 >
-                  <RotateCw size={18} />
+                  <SwitchCamera size={18} />
                 </button>
               )}
               <button 
@@ -514,10 +514,10 @@ const ScannerPage = () => {
                 title={scanMode === 'barcode' ? "Ganti ke Face Recognition" : "Ganti ke Barcode Scanner"}
                 disabled={!modelsLoaded}
               >
-                {scanMode === 'barcode' ? <UserRoundSearch size={18} /> : <Focus size={18} />}
+                {scanMode === 'barcode' ? <ScanFace size={18} /> : <ScanBarcode size={18} />}
               </button>
               <button className="glass-icon-button primary" onClick={() => { haptics.light(); fetchSchedules(); }} title="Refresh Jadwal">
-                <History size={18} className={dbStatus === 'connecting' ? 'spin' : ''} />
+                <RefreshCcw size={18} className={dbStatus === 'connecting' ? 'spin' : ''} />
               </button>
             </div>
           </div>

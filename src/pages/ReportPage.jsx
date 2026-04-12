@@ -88,10 +88,12 @@ const ReportPage = () => {
       <div className="report-header glass-panel">
         <div className="report-title-section">
           <Calendar size={32} className="accent-icon" />
-          <div>
+          <div className="report-text-block">
             <h1>Laporan Kehadiran Mahasiswa</h1>
-            <p className="subtitle">Real-time Data Sync Enabled • {formattedDate}</p>
-            <p className="subtitle">Kelas: <strong>R4M</strong></p>
+            <div className="subtitle-container">
+              <p className="subtitle">Real-time Data Sync Enabled • {formattedDate}</p>
+              <p className="subtitle">Kelas: <strong>R4M</strong></p>
+            </div>
           </div>
         </div>
 
