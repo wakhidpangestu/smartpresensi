@@ -123,34 +123,19 @@
     padding-bottom: 0;
   }
   .main-content {
-    padding-bottom: calc(85px + env(safe-area-inset-bottom));
+    padding-bottom: calc(95px + env(safe-area-inset-bottom));
   }
   .desktop-header { display: none; }
   
   .mobile-bottom-nav {
     display: flex;
     position: fixed;
-    bottom: calc(12px + env(safe-area-inset-bottom));
+    bottom: calc(20px + env(safe-area-inset-bottom));
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 32px);
     max-width: 380px; 
     height: 64px; 
-    
-    /* Display-mode standalone (PWA) adjustment */
-    @media (display-mode: standalone) {
-      bottom: 0;
-      width: 100%;
-      max-width: none;
-      left: 0;
-      transform: none;
-      border-radius: 20px 20px 0 0;
-      border-bottom: none;
-      height: calc(64px + env(safe-area-inset-bottom));
-      padding-bottom: env(safe-area-inset-bottom);
-      align-items: flex-start; /* Align content to the top part of the expanded bar */
-      padding-top: 8px;
-    }    
     /* iOS 26 Bubble transparent with light blur */
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.15) 100%);
     backdrop-filter: blur(6px);

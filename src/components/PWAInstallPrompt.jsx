@@ -7,17 +7,18 @@ const PWAInstallPrompt = () => {
     // Basic check for browser environment
     if (typeof window === 'undefined') return false;
 
-    // Check if it's iOS
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    // Check if it's iOS (including modern iPads that masquerade as MacIntel)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     
+    // Check if it's specifically Safari (not Chrome, not Firefox on iOS)
+    const isSafari = /Safari/.test(navigator.userAgent) && !/CriOS/.test(navigator.userAgent) && !/FxiOS/.test(navigator.userAgent);
+
     // Check if it's already in standalone mode
     const isStandalone = window.navigator.standalone === true || 
                        window.matchMedia('(display-mode: standalone)').matches;
 
-    // Check if the user has dismissed the prompt before
-    const hasDismissed = localStorage.getItem('pwa_prompt_dismissed');
-
-    return !!(isIOS && !isStandalone && !hasDismissed);
+    return !!(isIOS && isSafari && !isStandalone);
   });
 
   const handleDismiss = () => {

@@ -12,9 +12,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'pwa-192x192.png', 'pwa-512x512.png'],
       manifest: {
-        name: 'SmartPresensi',
-        short_name: 'SmartPresensi',
-        description: 'Sistem Presensi Pintar dengan Face Recognition',
+        name: 'Smart Presensi Digital',
+        short_name: 'Si Perdi',
+        description: 'Sistem Presensi Pintar dengan Face Recognition & QR Code',
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',
@@ -35,6 +35,10 @@ export default defineConfig({
       },
       workbox: {
         maximumFileSizeToCacheInBytes: 5000000,
+      },
+      injectRegister: 'inline',
+      devOptions: {
+        enabled: true
       }
     })
   ],
