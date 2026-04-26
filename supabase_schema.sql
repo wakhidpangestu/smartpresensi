@@ -1,5 +1,5 @@
 -- ==========================================
--- SMART PREN - SUPABASE DATABASE SCHEMA
+-- SI PERDI - SUPABASE DATABASE SCHEMA
 -- ==========================================
 -- Deskripsi: Skema database untuk sistem presensi otomatis berbasis QR/Barcode & OCR.
 -- Cara Penggunaan: Salin dan jalankan di SQL Editor Dashboard Supabase Anda.
@@ -46,6 +46,8 @@ CREATE TABLE public.presensi (
     student_id UUID REFERENCES public.students(id) ON DELETE CASCADE,
     course_id BIGINT REFERENCES public.courses(id) ON DELETE CASCADE,
     status TEXT NOT NULL CHECK (status IN ('Hadir', 'Terlambat', 'Izin', 'Sakit', 'Alfa')),
+    lat DOUBLE PRECISION,                           -- Geolocation Latitude
+    lng DOUBLE PRECISION,                           -- Geolocation Longitude
     waktu_scan TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

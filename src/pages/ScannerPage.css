@@ -286,7 +286,12 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: brightness(1.1) contrast(1.05);
+  filter: brightness(1.1) contrast(1.1) saturate(1.1);
+  transform: none;
+}
+
+.face-video-feed.mirrored {
+  transform: scaleX(-1) !important;
 }
 
 .face-detection-overlay {

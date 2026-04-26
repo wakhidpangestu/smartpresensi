@@ -1,10 +1,32 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode';
 import { supabase } from '../lib/supabase';
 import * as faceapi from '@vladmandic/face-api';
 import { Camera, SwitchCamera, CheckCircle, XCircle, Loader2, RefreshCcw, ScanFace, ScanBarcode, AlertCircle } from 'lucide-react';
 import { haptics } from '../lib/haptics';
 import './ScannerPage.css';
+
+// ======================== GEOLOCATION HELPERS ========================
+const getCurrentLocation = () => {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) return reject(new Error('Geolocation tidak didukung'));
+    navigator.geolocation.getCurrentPosition(resolve, reject, {
+      enableHighAccuracy: true, timeout: 8000, maximumAge: 0
+    });
+  });
+};
+
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371000; // Radius bumi dalam meter
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+};
+
 
 const ScannerPage = () => {
   const [time, setTime] = useState(new Date());
@@ -19,6 +41,12 @@ const ScannerPage = () => {
 
   const [scanStatus, setScanStatus] = useState('idle'); // idle, loading, success, error, missing
   const [faceBox, setFaceBox] = useState(null);
+  
+  const isFrontCamera = useMemo(() => {
+    if (cameras.length === 0) return scanMode === 'face';
+    const label = cameras[currentCameraIndex]?.label.toLowerCase() || '';
+    return label.includes('front') || label.includes('user') || label.includes('selfie') || (!label && scanMode === 'face');
+  }, [cameras, currentCameraIndex, scanMode]);
 
   const scannerRef = useRef(null);
   const videoRef = useRef(null);
@@ -138,6 +166,42 @@ const ScannerPage = () => {
         return;
       }
 
+      // Silent background location capture — no UI indication
+      let userCoords = null;
+      try {
+        const pos = await getCurrentLocation();
+        userCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      } catch {
+        // GPS unavailable — skip geolocation silently
+      }
+
+      // Proximity check (only if both user and first checkin have coords)
+      if (userCoords) {
+        const { data: firstCheckin } = await supabase
+          .from('presensi')
+          .select('lat, lng')
+          .eq('course_id', course.id)
+          .gte('waktu_scan', `${today}T00:00:00Z`)
+          .not('lat', 'is', null)
+          .order('waktu_scan', { ascending: true })
+          .limit(1)
+          .single();
+
+        if (firstCheckin?.lat && firstCheckin?.lng) {
+          const distance = calculateDistance(userCoords.lat, userCoords.lng, firstCheckin.lat, firstCheckin.lng);
+          if (distance > 30) {
+            haptics.error();
+            setStatusWithTimeout('error');
+            showNotification({ 
+              type: 'error', 
+              title: 'Di Luar Kelas', 
+              message: 'Tidak dapat mengisi kehadiran di luar ruang kelas.' 
+            });
+            return;
+          }
+        }
+      }
+
       const [sH, sM] = course.time_start.replace(/\./g, ':').split(':').map(Number);
       const limit = new Date(); limit.setHours(sH, sM + 15, 0);
       const status = new Date() > limit ? 'Terlambat' : 'Hadir';
@@ -145,7 +209,9 @@ const ScannerPage = () => {
       const { error: insErr } = await supabase.from('presensi').insert([{ 
         student_id: student.id, 
         course_id: course.id, 
-        status 
+        status,
+        lat: userCoords?.lat ?? null,
+        lng: userCoords?.lng ?? null
       }]);
 
       if (insErr) throw insErr;
@@ -155,14 +221,14 @@ const ScannerPage = () => {
       showNotification({ 
         type: 'success', 
         title: `Absen ${status}!`, 
-        message: student.name, 
-        sub: course.subject_name 
+        message: student.name,
+        sub: course.subject_name
       });
     } catch (err) {
       console.error("[Attendance] Error:", err);
       haptics.error();
       setStatusWithTimeout('error');
-      showNotification({ type: 'error', title: 'Error', message: 'Gagal mencatat kehadiran.' });
+      showNotification({ type: 'error', title: 'Gagal Absen', message: err.message || 'Error tidak diketahui' });
     }
   }, [showNotification, setStatusWithTimeout]);
 
@@ -178,7 +244,7 @@ const ScannerPage = () => {
       // PERF: TinyFaceDetector is significantly faster than SsdMobilenet for real-time tracking
       const detection = await faceapi.detectSingleFace(
         videoRef.current, 
-        new faceapi.TinyFaceDetectorOptions({ inputSize: 160, scoreThreshold: 0.4 })
+        new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.4 })
       );
 
       if (detection && videoRef.current) {
@@ -192,10 +258,13 @@ const ScannerPage = () => {
         const width = detection.box.width * scale;
         const height = detection.box.height * scale;
 
+        // Flip X coordinate if the camera is mirrored (Front Camera)
+        const finalX = isFrontCamera ? (video.offsetWidth - x - width) : x;
+
         const size = Math.max(width, height) * 1.25;
         
         setFaceBox({
-          x: (x + width / 2) - size / 2,
+          x: (finalX + width / 2) - size / 2,
           y: (y + height / 2) - size / 2,
           width: size,
           height: size
@@ -207,7 +276,7 @@ const ScannerPage = () => {
     } catch {
       // Silently fail for frames
     }
-  }, [scanMode, scanStatus, modelsLoaded]);
+  }, [scanMode, scanStatus, modelsLoaded, isFrontCamera]);
 
   /** 
    * OPTIMIZED RECOGNITION LOOP (Decoupled - Lower FPS)
@@ -364,7 +433,20 @@ const ScannerPage = () => {
           }
         } else {
           const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: availableCameras[currentCameraIndex] ? { deviceId: { exact: availableCameras[currentCameraIndex].id } } : { facingMode: 'user' } 
+            video: availableCameras[currentCameraIndex] ? 
+              { 
+                deviceId: { exact: availableCameras[currentCameraIndex].id },
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
+                frameRate: { ideal: 30 },
+                advanced: [{ focusMode: 'continuous', exposureMode: 'continuous', whiteBalanceMode: 'continuous' }]
+              } : 
+              { 
+                facingMode: 'user',
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
+                advanced: [{ focusMode: 'continuous', exposureMode: 'continuous' }]
+              } 
           });
           streamRef.current = stream;
           if (videoRef.current) {
@@ -426,7 +508,7 @@ const ScannerPage = () => {
           <div id="reader" className="camera-feed"></div>
         ) : (
           <div className="face-scanner-view">
-             <video ref={videoRef} autoPlay playsInline className="face-video-feed"></video>
+             <video ref={videoRef} autoPlay playsInline className={`face-video-feed ${isFrontCamera ? 'mirrored' : ''}`}></video>
              <div className="face-detection-overlay">
                 <div 
                   className={`face-id-frame ${scanStatus}`}

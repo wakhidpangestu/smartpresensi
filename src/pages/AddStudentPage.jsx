@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import { Html5Qrcode } from 'html5-qrcode';
 import Tesseract from 'tesseract.js';
@@ -19,6 +19,12 @@ const AddStudentPage = () => {
   const [enrollProgress, setEnrollProgress] = useState(0);
   const [faceBox, setFaceBox] = useState(null);
   const [ktmStatus, setKtmStatus] = useState('idle'); // 'idle', 'success', 'error'
+
+  const isFrontCamera = useMemo(() => {
+    if (devices.length === 0) return mode === 'face_enroll';
+    const label = devices[currentCamera]?.label.toLowerCase() || '';
+    return label.includes('front') || label.includes('user') || label.includes('selfie') || (!label && mode === 'face_enroll');
+  }, [devices, currentCamera, mode]);
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -73,8 +79,11 @@ const AddStudentPage = () => {
         const centerX = x + width / 2;
         const centerY = y + height / 2;
 
+        // Flip X if mirrored
+        const finalCenterX = isFrontCamera ? (displayWidth - centerX) : centerX;
+
         setFaceBox({
-          x: centerX - size / 2,
+          x: finalCenterX - size / 2,
           y: centerY - size / 2,
           width: size,
           height: size
@@ -83,7 +92,7 @@ const AddStudentPage = () => {
         setFaceBox(null);
       }
     } catch (e) { console.debug("Tracking fail", e); }
-  }, [mode, modelsLoaded]);
+  }, [mode, modelsLoaded, isFrontCamera]);
 
   const startStream = useCallback(async (deviceId) => {
     stopCamera();
@@ -92,13 +101,17 @@ const AddStudentPage = () => {
         video: {
           deviceId: deviceId ? { exact: deviceId } : undefined,
           facingMode: deviceId ? undefined : ( (mode==='face_enroll') ? {ideal:"user"} : {ideal:"environment"} ),
-          width: { ideal: mode === 'face_enroll' ? 1024 : 1280 }, 
-          height: { ideal: mode === 'face_enroll' ? 1024 : 720 },
+          width: { ideal: mode === 'face_enroll' ? 1024 : 1920 }, 
+          height: { ideal: mode === 'face_enroll' ? 1024 : 1080 },
+          frameRate: { ideal: 30, min: 15 },
           advanced: [
             { focusMode: "continuous" },
             { whiteBalanceMode: "continuous" },
             { exposureMode: "continuous" },
-            { zoom: 1 }
+            { brightness: 100 },
+            { contrast: 100 },
+            { saturation: 100 },
+            { sharpness: 100 }
           ]
         }
       };
@@ -182,18 +195,14 @@ const AddStudentPage = () => {
           const imageData = ctx.getImageData(0, 0, width, height);
           const data = imageData.data;
           for (let i = 0; i < data.length; i += 4) {
-            // Grayscale with higher weight on green for better contrast in typical KTMs
             const gray = (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114);
             
-            // Contrast Stretching / Thresholding Lite
-            let contrasted = gray;
-            if (gray < 128) {
-              contrasted = Math.max(0, gray * 0.8); // Darken darks
-            } else {
-              contrasted = Math.min(255, gray * 1.2); // Lighten lights
-            }
+            // Adaptive-like Contrast Enhancement
+            let c = gray;
+            if (gray < 100) c = gray * 0.7; // Darken shadows
+            else if (gray > 160) c = Math.min(255, gray * 1.3); // Brighten highlights
             
-            data[i] = data[i+1] = data[i+2] = contrasted;
+            data[i] = data[i+1] = data[i+2] = c;
           }
           ctx.putImageData(imageData, 0, 0);
           resolve(canvas.toDataURL('image/jpeg', 0.90));
@@ -550,7 +559,7 @@ const AddStudentPage = () => {
             </div>
             
             <div className="camera-container face-mode">
-              <video ref={videoRef} autoPlay playsInline className="video-preview"></video>
+              <video ref={videoRef} autoPlay playsInline className={`video-preview ${isFrontCamera ? 'mirrored' : ''}`}></video>
               <div className="viewport-overlay"></div>
 
               {/* iOS Face ID Visual Overlay */}
@@ -622,15 +631,33 @@ const AddStudentPage = () => {
             <div className="review-form">
               <div className="input-group">
                 <label>NPM (Nomor Pokok Mahasiswa)</label>
-                <input type="text" value={studentData.npm} onChange={(e) => setStudentData({...studentData, npm: e.target.value})} placeholder="Contoh: 202143501234" className="review-input" />
+                <input 
+                  type="text" 
+                  value={studentData.npm} 
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, '');
+                    setStudentData({...studentData, npm: val});
+                  }} 
+                  placeholder="Contoh: 202143501234" 
+                  className="review-input" 
+                />
               </div>
               <div className="input-group">
                 <label>Nama Lengkap</label>
-                <input type="text" value={studentData.name} onChange={(e) => setStudentData({...studentData, name: e.target.value.toUpperCase()})} placeholder="Sesuai KTP / KTM" className="review-input" />
+                <input 
+                  type="text" 
+                  value={studentData.name} 
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/[^a-zA-Z\s]/g, '').toUpperCase();
+                    setStudentData({...studentData, name: val});
+                  }} 
+                  placeholder="Sesuai KTP / KTM" 
+                  className="review-input" 
+                />
               </div>
               <div className="input-group">
                 <label>Program Studi (Prodi)</label>
-                <input type="text" value={studentData.major} onChange={(e) => setStudentData({...studentData, major: e.target.value})} placeholder="Informatika / DKV / dsb" className="review-input" />
+                <input type="text" value={studentData.major} onChange={(e) => setStudentData({...studentData, major: e.target.value})} placeholder="Teknik Informatika" className="review-input" />
               </div>
             </div>
             <div className="review-actions row">
